@@ -1,0 +1,41 @@
+#!/bin/sh
+PIDFILE="/var/run/rtsp-server.pid"
+
+status()
+{
+  pid="$(cat "$PIDFILE" 2>/dev/null)"
+  if [ "$pid" ]; then
+    kill -0 "$pid" >/dev/null && echo "PID: $pid" || return 1
+  fi
+}
+
+start()
+{
+  LOG=/dev/null
+  echo "Starting RTSP server..."
+  snx_rtsp_server -Q 10 -u media/stream1 -P 554 -A admin:12345 >$LOG 2>&1 &
+  echo "$!" > "$PIDFILE"
+}
+
+stop()
+{
+  pid="$(cat "$PIDFILE" 2>/dev/null)"
+  if [ "$pid" ]; then
+     kill $pid ||  rm "$PIDFILE"
+  fi
+  pids=$(ps w | grep snx_rtsp_server | grep -v 'grep' | awk '{print $1}')
+  echo $pids
+  for pid in $pids ; do
+    kill -9 $pid
+  done
+}
+
+if [ $# -eq 0 ]; then
+  start
+else
+  case $1 in start|stop|status)
+    $1
+    ;;
+  esac
+fi
+

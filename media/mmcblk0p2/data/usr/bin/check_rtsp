@@ -1,0 +1,39 @@
+#!/bin/sh
+# check-rtsp script
+# Uses PID instead of log file. Writes timestamp with message in messages log file.
+
+PIDFILE="/var/run/rtsp-server.pid"
+
+restart()
+{
+	/media/mmcblk0p2/data/etc/scripts/20-rtsp-server stop
+	/media/mmcblk0p2/data/etc/scripts/20-rtsp-server start	
+}
+
+check_pid()
+{
+	pid=$(cat "$PIDFILE" 2>/dev/null)
+	#echo $pid >>/var/log/messages
+	if [ -z "$pid" ]; then
+		TIMESTAMP="$(date +%c)"
+		echo $TIMESTAMP "rtsp server seems hung. PID is absent." >>/var/log/messages
+		restart
+	fi
+}
+
+check_process()
+{
+	prc=$(ps w | grep snx_rtsp_server | grep -v 'grep')
+	#echo $prc >> /var/log/messages
+	if [ -z "$prc" ]; then
+                TIMESTAMP=$(date +%c)
+		echo $TIMESTAMP 'rtsp server seems hung. Process not found.' >>/var/log/messages
+		restart
+	fi
+}
+
+while [ "1" -ne "2" ]; do
+        sleep 30
+	check_pid
+	check_process
+done
