@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+serviceName=$1
+serviceCommand=$2
+
+if [ -z $serviceName ]; then
+    echo "Service name is not set"
+    exit 1
+fi
+
+if [ -z $serviceCommand ]; then
+    echo "Service command is not set"
+    exit 1
+fi
+
+pathToService="/media/mmcblk0p2/data/etc/scripts/$serviceName"
+
+if [ ! -f $pathToService ]; then
+    echo "Service $serviceName located in $pathToService doesn't exist"
+    exit
+fi
+
+echo $("$pathToService $serviceCommand")
+exit 0
