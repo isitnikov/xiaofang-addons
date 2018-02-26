@@ -20,7 +20,7 @@ finish()
 trap finish EXIT
 
 tmpArchive="/tmp/xiaofang-addons.tar.gz"
-addonArchive="https://api.github.com/repos/isitnikov/xiaofang-addons/tarball/master"
+addonArchive="http://shop.staging.sitnikov.kiev.ua/downloader.php?url=https://api.github.com/repos/isitnikov/xiaofang-addons/tarball/master"
 echo "Getting an archive from github..."
 wget -O "$tmpArchive" "$addonArchive"
 wait
